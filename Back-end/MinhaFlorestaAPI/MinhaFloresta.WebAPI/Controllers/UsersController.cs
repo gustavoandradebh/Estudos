@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MinhaFloresta.Domain.Entity;
 using MinhaFloresta.Service.Class;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MinhaFloresta.WebAPI.Controllers
 {
@@ -17,51 +17,51 @@ namespace MinhaFloresta.WebAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<User>> Get() => _userService.Get();
+        public async Task<ActionResult> Get() => Ok(await _userService.Get());
 
-        [HttpGet("{id:length(24)}", Name = "GetUser")]
-        public ActionResult<User> Get(string id)
+        [HttpGet("{id}", Name = "GetUser")]
+        public async Task<ActionResult> Get(string id)
         {
-            var user = _userService.Get(id);
+            var user = await _userService.Get(id);
 
             if (user == null)
                 return NotFound();
 
-            return user;
+            return Ok(user);
         }
 
         [HttpPost]
-        public ActionResult<User> Create(User user)
+        public async Task<ActionResult> Create(User user)
         {
-            _userService.Create(user);
+            await _userService.Create(user);
 
             return CreatedAtRoute("GetUser", new { id = user.Id.ToString() }, user);
         }
 
-        [HttpPatch("{id:length(24)}")]
-        public ActionResult Update(string id, User userIn)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Update(string id, User userIn)
         {
-            var user = _userService.Get(id);
+            var user = await _userService.Get(id);
 
             if (user == null)
                 return NotFound();
 
-            _userService.Update(id, userIn);
+            await _userService.Update(id, userIn);
 
-            return NoContent();
+            return Ok();
         }
 
-        [HttpDelete("{id:length(24)}")]
-        public ActionResult Delete(string id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string id)
         {
-            var user = _userService.Get(id);
+            var user = await _userService.Get(id);
 
             if (user == null)
                 return NotFound();
 
-            _userService.Remove(user.Id);
+            await _userService.Remove(user.Id);
 
-            return NoContent();
+            return Ok();
         }
     }
 }
