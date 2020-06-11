@@ -14,7 +14,7 @@ namespace MinhaFloresta.Service.Class
             var client = new MongoClient(dbSettings.ConnectionString);
             var database = client.GetDatabase(dbSettings.DatabaseName);
 
-            _plants = database.GetCollection<Plant>(dbSettings.MinhaFlorestaCollectionName);
+            _plants = database.GetCollection<Plant>(dbSettings.PlantsCollectionName);
         }
 
         public List<Plant> Get() => _plants.Find(plant => true).ToList();
@@ -35,6 +35,11 @@ namespace MinhaFloresta.Service.Class
         public void Remove(Plant plantIn)
         {
             _plants.DeleteOne(plant => plant.Id == plantIn.Id);
+        }
+
+        public void Remove(User userIn)
+        {
+            _plants.DeleteMany(plant => plant.UserId == userIn.Id);
         }
 
         public void Remove(string id)

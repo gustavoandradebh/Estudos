@@ -26,6 +26,7 @@ namespace MinhaFloresta.WebAPI
             services.AddSingleton<IDatabaseSettings>(sp => sp.GetRequiredService<IOptions<MinhaFlorestaMongoDbSettings>>().Value);
 
             services.AddSingleton<PlantService>();
+            services.AddSingleton<UserService>();
 
             services.AddControllers();
 
