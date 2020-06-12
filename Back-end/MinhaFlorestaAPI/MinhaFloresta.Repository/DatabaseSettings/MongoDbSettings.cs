@@ -1,6 +1,6 @@
 ﻿namespace MinhaFloresta.Repository.DatabaseSettings
 {
-    public class MinhaFlorestaMongoDbSettings : IDatabaseSettings
+    public class MongoDbSettings : IDatabaseSettings
     {
         public string PlantsCollectionName { get; set; }
         public string UsersCollectionName { get; set; }

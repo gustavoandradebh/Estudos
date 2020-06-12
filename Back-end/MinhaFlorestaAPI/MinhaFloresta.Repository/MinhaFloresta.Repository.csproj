@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MinhaFloresta.Domain\MinhaFloresta.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Collections\" />
+  </ItemGroup>
+
 </Project>

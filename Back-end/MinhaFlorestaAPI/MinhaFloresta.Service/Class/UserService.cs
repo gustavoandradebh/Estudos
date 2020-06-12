@@ -1,50 +1,33 @@
 ﻿using MinhaFloresta.Domain.Entity;
-using MinhaFloresta.Repository.DatabaseSettings;
-using MongoDB.Driver;
-using System.Collections.Generic;
+using MinhaFloresta.Repository.Interfaces;
+using System.Threading.Tasks;
 
 namespace MinhaFloresta.Service.Class
 {
 
-    public class UserService
+    public class UserService: BaseService
     {
-        private readonly IMongoCollection<User> _users;
+        private readonly IRepository _repository;
         private readonly PlantService _plantService;
 
-        public UserService(IDatabaseSettings dbSettings, PlantService plantService)
+        public UserService(IRepository repository, PlantService plantService): base(repository)
         {
-            var client = new MongoClient(dbSettings.ConnectionString);
-            var database = client.GetDatabase(dbSettings.DatabaseName);
-
-            _users = database.GetCollection<User>(dbSettings.UsersCollectionName);
+            _repository = repository;
             _plantService = plantService;
         }
 
-        public List<User> Get() => _users.Find(user => true).ToList();
-
-        public User Get(string id) => _users.Find<User>(user => user.Id == id).FirstOrDefault();
-
-        public User Create(User user)
+        public async Task<User> GetUserPlants(string userId)
         {
-            _users.InsertOne(user);
+            var user = await base.Get<User>(userId);
+            if (user != null)
+                user.Plants = await _repository.Get<Plant>(p => p.UserId == userId);
+
             return user;
         }
-
-        public void Update(string id, User userUpdated)
+        public override async Task Remove<T>(string userId)
         {
-            _users.ReplaceOne(user => user.Id == id, userUpdated);
-        }
-
-        public void Remove(User userIn)
-        {
-            _plantService.Remove(userIn);
-            _users.DeleteOne(user => user.Id == userIn.Id);
-        }
-
-        public void Remove(string id)
-        {
-            _plantService.Remove(new User { Id = id } );
-            _users.DeleteOne(user => user.Id == id);
+            await _plantService.RemoveByUser(userId);
+            await _repository.Remove<User>(userId);
         }
     }
 }

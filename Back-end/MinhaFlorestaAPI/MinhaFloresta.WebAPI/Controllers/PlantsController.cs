@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MinhaFloresta.Domain.Entity;
 using MinhaFloresta.Service.Class;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MinhaFloresta.WebAPI.Controllers
 {
@@ -17,51 +17,51 @@ namespace MinhaFloresta.WebAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Plant>> Get() => _plantService.Get();
+        public async Task<ActionResult> Get() => Ok(await _plantService.Get<Plant>());
 
         [HttpGet("{id:length(24)}", Name = "GetPlant")]
-        public ActionResult<Plant> Get(string id)
+        public async Task<ActionResult> Get(string id)
         {
-            var plant = _plantService.Get(id);
+            var plant = await _plantService.Get<Plant>(id);
 
             if (plant == null)
                 return NotFound();
 
-            return plant;
+            return Ok(plant);
         }
 
         [HttpPost]
-        public ActionResult<Plant> Create(Plant plant)
+        public async Task<ActionResult> Create(Plant plant)
         {
-            _plantService.Create(plant);
+            await _plantService.Create(plant);
 
             return CreatedAtRoute("GetPlant", new { id = plant.Id.ToString() }, plant);
         }
 
         [HttpPatch("{id:length(24)}")]
-        public ActionResult Update(string id, Plant plantIn)
+        public async Task<ActionResult> Update(string id, Plant plantIn)
         {
-            var plant = _plantService.Get(id);
+            var plant = await _plantService.Get<Plant>(id);
 
             if (plant == null)
                 return NotFound();
 
-            _plantService.Update(id, plantIn);
+            await _plantService.Update(id, plantIn);
 
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id:length(24)}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            var plant = _plantService.Get(id);
+            var plant = await _plantService.Get<Plant>(id);
 
             if (plant == null)
                 return NotFound();
 
-            _plantService.Remove(plant.Id);
+            await _plantService.Remove<Plant>(plant.Id);
 
-            return NoContent();
+            return Ok();
         }
     }
 }
