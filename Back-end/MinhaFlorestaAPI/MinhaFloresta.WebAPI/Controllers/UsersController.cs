@@ -17,12 +17,22 @@ namespace MinhaFloresta.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get() => Ok(await _userService.Get());
+        public async Task<ActionResult> Get() => Ok(await _userService.Get<User>());
 
         [HttpGet("{id}", Name = "GetUser")]
-        public async Task<ActionResult> Get(string id)
+        public async Task<ActionResult> GetUser(string id)
         {
-            var user = await _userService.Get(id);
+            var user = await _userService.Get<User>(id);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+        [HttpGet("{id}/plants", Name = "GetUserPlants")]
+        public async Task<ActionResult> GetUserPlants(string id)
+        {
+            var user = await _userService.GetUserPlants(id);
 
             if (user == null)
                 return NotFound();
@@ -41,7 +51,7 @@ namespace MinhaFloresta.WebAPI.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> Update(string id, User userIn)
         {
-            var user = await _userService.Get(id);
+            var user = await _userService.Get<User>(id);
 
             if (user == null)
                 return NotFound();
@@ -54,12 +64,12 @@ namespace MinhaFloresta.WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {
-            var user = await _userService.Get(id);
+            var user = await _userService.Get<User>(id);
 
             if (user == null)
                 return NotFound();
 
-            await _userService.Remove(user.Id);
+            await _userService.Remove<User>(user.Id);
 
             return Ok();
         }

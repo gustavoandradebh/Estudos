@@ -1,46 +1,33 @@
 ﻿using MinhaFloresta.Domain.Entity;
 using MinhaFloresta.Repository.Interfaces;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MinhaFloresta.Service.Class
 {
 
-    public class UserService
+    public class UserService: BaseService
     {
         private readonly IRepository _repository;
         private readonly PlantService _plantService;
 
-        public UserService(IRepository repository, PlantService plantService)
+        public UserService(IRepository repository, PlantService plantService): base(repository)
         {
             _repository = repository;
             _plantService = plantService;
         }
 
-        public async Task<List<User>> Get() => await _repository.GetAll<User>();
-
-        public async Task<User> Get(string id) => await _repository.GetById<User>(id);
-
-        public async Task<User> Create(User user)
+        public async Task<User> GetUserPlants(string userId)
         {
-            await _repository.Add<User>(user);
+            var user = await base.Get<User>(userId);
+            if (user != null)
+                user.Plants = await _repository.Get<Plant>(p => p.UserId == userId);
+
             return user;
         }
-
-        public async Task Update(string id, User userUpdated)
+        public override async Task Remove<T>(string userId)
         {
-            await _repository.Update<User>(id, userUpdated);
-        }
-
-        public async Task Remove(User userIn)
-        {
-            await Remove(userIn.Id);
-        }
-
-        public async Task Remove(string id)
-        {
-            await _plantService.RemoveByUser(id);
-            await _repository.Remove<User>(id);
+            await _plantService.RemoveByUser(userId);
+            await _repository.Remove<User>(userId);
         }
     }
 }
