@@ -1,5 +1,6 @@
 ﻿using MinhaFloresta.Domain.Entity;
 using MinhaFloresta.Repository.Interfaces;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MinhaFloresta.Service.Class
@@ -14,6 +15,13 @@ namespace MinhaFloresta.Service.Class
         {
             _repository = repository;
             _plantService = plantService;
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = await _repository.Get<User>(x => x.Email == email);
+
+            return user.FirstOrDefault();
         }
 
         public async Task<User> GetUserPlants(string userId)

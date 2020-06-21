@@ -16,8 +16,8 @@ namespace MinhaFloresta.WebAPI.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult> Get() => Ok(await _userService.Get<User>());
+        //[HttpGet]
+        //public async Task<ActionResult> Get() => Ok(await _userService.Get<User>());
 
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<ActionResult> GetUser(string id)
@@ -29,6 +29,18 @@ namespace MinhaFloresta.WebAPI.Controllers
 
             return Ok(user);
         }
+
+        [HttpGet("", Name = "GetUserByEmail")]
+        public async Task<ActionResult> GetUserByEmail([FromQuery] string email)
+        {
+            var user = await _userService.GetUserByEmail(email);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+
         [HttpGet("{id}/plants", Name = "GetUserPlants")]
         public async Task<ActionResult> GetUserPlants(string id)
         {
